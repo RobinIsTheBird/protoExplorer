@@ -1,0 +1,45 @@
+html,
+body {
+  font-family: "Verdana", "Helvetica", "Arial", "sans-serif";
+  height: 100%;
+  margin: 0px;
+}
+h1 {
+  background: #6cf;
+  height: 50px;
+  margin: 0px;
+  padding: 20px 30px 10px;
+}
+h2 {
+  margin: 4px 0px;
+}
+.hidden {
+  display: none;
+}
+.sample {
+  border: 2px solid #000;
+  border-radius: 2px;
+  box-sizing: border-box;
+  float: left;
+  padding: 4px;
+  margin: 2px;
+  width: 26%;
+}
+div.level {
+  position: relative;
+  margin-bottom: 20px;
+}
+div.hello,
+div.world {
+  display: inline-block;
+}
+div.world-edit.editor {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+div.world-edit.editor input {
+  box-sizing: border-box;
+  margin: 0px;
+  width: 100%;
+}
