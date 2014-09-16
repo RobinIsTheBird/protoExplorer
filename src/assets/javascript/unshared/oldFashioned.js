@@ -15,6 +15,11 @@
         this._$worldDiv = $(this._$worldSpan).parent('.world');
         this._$worldEdit = this._$worldInput = null;
     };
+    function stopPropagation(ev) {
+        if (!!ev) {
+            ev.stopPropagation();
+        }
+    }
     BaseHello.prototype = {
         sup: Object.prototype,
         constructor: BaseHello,
@@ -41,7 +46,7 @@
             return this;
         },
         editWorld: function (ev) {
-            ev.stopPropagation();
+            stopPropagation(ev);
             this._$worldInput
                 .val(this._world);
             this._$worldEdit.removeClass('hidden');
@@ -50,7 +55,7 @@
             return this;
         },
         commitWorld: function (ev) {
-            ev && ev.stopPropagation();
+            stopPropagation(ev);
             this._world = this._$worldInput.val();
             this._$worldSpan
                 .empty()
@@ -96,7 +101,7 @@
         },
         toggleButtonFeedback: function (ev) {
             var $arrow = this._$choiceButton.children('div');
-            ev && ev.stopPropagation();
+            stopPropagation(ev);
             this._$choiceDropdown.toggleClass('hidden');
             $arrow.toggleClass('down-arrow up-arrow');
             $arrow.empty()
@@ -105,16 +110,25 @@
         },
         choose: function (ev) {
             var val = $(ev.target).data('val');
-            ev.stopPropagation();
+            stopPropagation(ev);
             this._$worldInput.val(val);
             this.commitWorld();
             return this;
         },
         addChoice: function (ev) {
             var val = this._$worldInput.val();
-            ev.stopPropagation();
+            stopPropagation(ev);
             this.worldList.push(val);
-            this.worldList.sort();
+            this.worldList.sort(function (a, b) {
+                a = a.toLowerCase();
+                b = b.toLowerCase();
+                if (a < b) {
+                    return -1;
+                } else if (b < a) {
+                    return 1;
+                }
+                return 0;
+            });
             this._$choiceDropdown.empty();
             this.worldList.forEach(function (aWorld) {
                 $('<li><a href="#">' + aWorld + '</a></li>')
