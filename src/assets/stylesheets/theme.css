@@ -38,8 +38,60 @@ div.world-edit.editor {
   right: 0px;
   top: 0px;
 }
+.first.level div.world-edit.editor {
+  padding-right: 1em;
+}
 div.world-edit.editor input {
   box-sizing: border-box;
   margin: 0px;
   width: 100%;
+}
+div.world-edit.editor button {
+  background-color: transparent;
+  border: 0px none;
+  height: 100%;
+  margin: 0px;
+  position: absolute;
+  width: 1em;
+}
+div.down-arrow,
+div.up-arrow {
+  border-left: .5em solid transparent;
+  border-right: .5em solid transparent;
+  display: inline-block;
+  height: 0px;
+  line-height: 0px;
+  margin-left: -.5em;
+  overflow: hidden;
+  width: 0px;
+}
+div.down-arrow {
+  border-top: .8em solid #000;
+}
+div.up-arrow {
+  border-bottom: .8em solid #000;
+}
+ul.drop-down {
+  background-color: #fff;
+  border: 1px solid #999;
+  border-top: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  box-sizing: border-box;
+  font-size: 95%;
+  left: 0px;
+  list-style: none;
+  margin: 0px;
+  overflow: hidden;
+  padding: 4px;
+  position: absolute;
+  right: 1.05em;
+  z-index: 50;
+}
+ul.drop-down li a {
+  color: #333;
+  display: block;
+  margin: 0px;
+  padding: 0px;
+  text-decoration: none;
 }
