@@ -111,6 +111,7 @@
         choose: function (ev) {
             var val = $(ev.target).data('val');
             stopPropagation(ev);
+            this.toggleButtonFeedback(ev);
             this._$worldInput.val(val);
             this.commitWorld();
             return this;
