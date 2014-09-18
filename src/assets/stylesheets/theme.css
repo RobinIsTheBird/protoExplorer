@@ -38,7 +38,8 @@ div.world-edit.editor {
   right: 0px;
   top: 0px;
 }
-.first.level div.world-edit.editor {
+.first.level div.world-edit.editor,
+.second.level div.world-edit.editor {
   padding-right: 1em;
 }
 div.world-edit.editor input {

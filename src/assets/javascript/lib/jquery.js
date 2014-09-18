@@ -1,1 +1,1 @@
-/Users/robinschaufler/Documents/Tech/Dev/lib/webfrontend/javascript/jquery/dist/jquery.js
+/Users/robinschaufler/Documents/Tech/Dev/lib/webfrontend/downloads/jquery-2.1.1.js
