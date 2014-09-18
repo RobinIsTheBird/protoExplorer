@@ -4,7 +4,7 @@
     var BaseHello = function (options) {
         this._hello = options && options.hello || 'Hello';
         this._world = options && options.world || 'World';
-        this._sampleSelector = options && options.sampleSelector || '#old-fashioned';
+        this._sampleSelector = options && options.sampleSelector || '#object-create';
         this._helloSelector = options && options.helloSelector || '.base.level span.hello';
         this._worldSelector = options && options.worldSelector || '.base.level span.world';
         this._$sample = $(this._sampleSelector);
@@ -18,7 +18,7 @@
         writable: false,
         enumerable: true,
         configurable: false,
-        value: 'oldFashionedBaseHello'
+        value: 'objectCreateBaseHello'
     });
     function stopPropagation (ev) {
         if (!!ev) {
@@ -102,9 +102,9 @@
         writable: false,
         enumerable: true,
         configurable: false,
-        value: 'oldFashionedHelloList'
+        value: 'objectCreateHelloList'
     });
-    var hlp = HelloList.prototype = new BaseHello();
+    var hlp = HelloList.prototype = Object.create(BaseHello.prototype);
     $.extend(hlp, {
         sup: BaseHello.prototype,
         constructor: HelloList,
@@ -228,9 +228,9 @@
         writable: false,
         enumerable: true,
         configurable: false,
-        value: 'oldFashionedHelloTypeahead'
+        value: 'objectCreateHelloTypeahead'
     });
-    var htp = HelloTypeahead.prototype = new HelloList();
+    var htp = HelloTypeahead.prototype = Object.create(HelloList.prototype);
     $.extend(htp, {
         sup: HelloList.prototype,
         constructor: HelloTypeahead,
