@@ -296,4 +296,42 @@
     });
     var myHelloTypeahead = new HelloTypeahead();
     myHelloTypeahead.greet();
+
+    var $ul = $('#object-create').find('.details ul');
+    $ul.append('<li>' + (myHelloTypeahead instanceof HelloTypeahead ? '' : 'is not ') +
+        'instanceof HelloTypeahead</li>');
+    $ul.append('<li>' + (myHelloTypeahead instanceof HelloList ? '' : 'is not ') +
+        'instanceof HelloList</li>');
+    $ul.append('<li>' + (myHelloTypeahead instanceof BaseHello ? '' : 'is not ') +
+        'instanceof BaseHello</li>');
+
+    $ul.append('<li>myHelloTypeahead.__proto__ ' +
+        (myHelloTypeahead.__proto__ instanceof HelloList ? 'instanceof' : 'is not a') +
+        ' HelloList</li>');
+    $ul.append('<li>myHelloTypeahead.__proto__.__proto__ ' +
+        (myHelloTypeahead.__proto__.__proto__ instanceof BaseHello ? 'instanceof' : 'is not a') +
+        ' BaseHello</li>');
+
+    $ul.append('<li>Object.getPrototypeOf(myHelloTypeahead) ' +
+        (Object.getPrototypeOf(myHelloTypeahead) === HelloTypeahead.prototype ? '===' : '!==') +
+        ' HelloTypeahead.prototype</li>');
+    $ul.append('<li>Object.getPrototypeOf(Object.getPrototypeOf(myHelloTypeahead)) ' +
+        (Object.getPrototypeOf(Object.getPrototypeOf(myHelloTypeahead)) === HelloList.prototype ? '===' : '!==') +
+        ' HelloList.prototype</li>');
+    $ul.append('<li>Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(myHelloTypeahead))) ' +
+        (Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(myHelloTypeahead))) === BaseHello.prototype ? '===' : '!==') +
+        ' BaseHello.prototype</li>');
+
+    $ul.append('<li>myHelloTypeahead.greet ' +
+        (myHelloTypeahead.hasOwnProperty('greet') ? 'is in' : 'is not in') +
+        ' myHelloTypeahead</li>');
+    $ul.append('<li>myHelloTypeahead.greet ' +
+        (Object.getPrototypeOf(myHelloTypeahead).hasOwnProperty('greet') ? 'is in' : 'is not in') +
+        ' Object.getPrototypeOf(myHelloTypeahead)</li>');
+    $ul.append('<li>myHelloTypeahead.greet ' +
+        (Object.getPrototypeOf(Object.getPrototypeOf(myHelloTypeahead)).hasOwnProperty('greet') ? 'is in' : 'is not in') +
+        ' Object.getPrototypeOf(Object.getPrototypeOf(myHelloTypeahead))</li>');
+    $ul.append('<li>myHelloTypeahead.greet ' +
+        (Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(myHelloTypeahead))).hasOwnProperty('greet') ? 'is in' : 'is not in') +
+        ' Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(myHelloTypeahead)))</li>');
 })();

@@ -3,7 +3,10 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
-            all: ['src/assets/javascript/unshared/*.js']
+            options: {
+                proto: true
+            },
+            all: ['Gruntfile.js', 'src/assets/javascript/unshared/*.js']
         }
     });
     // Load the jshint plugin.

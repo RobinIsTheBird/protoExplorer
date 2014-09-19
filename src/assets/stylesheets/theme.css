@@ -23,7 +23,7 @@ h2 {
   float: left;
   padding: 4px;
   margin: 2px;
-  width: 26%;
+  width: 32%;
 }
 div.level {
   position: relative;
@@ -98,4 +98,12 @@ ul.drop-down li a {
 }
 ul.drop-down li a:hover {
   background-color: #c0e0f0;
+}
+.details p {
+  font-size: 88%;
+}
+.details ul {
+  font-size: 80%;
+  padding-left: 14px;
+  word-break: break-word;
 }
