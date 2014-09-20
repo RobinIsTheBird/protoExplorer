@@ -19,16 +19,16 @@
         $.extend(Replacement.prototype, {
             constructor: Replacement,
             reset: function () { // Override
-                proxyOptions.x = privateState.initialX;
+                proxyOptions.protected.x = privateState.initialX;
             },
             shiftNext: function () {
-                proxyOptions.x = proxyOptions.x + privateState.increment;
+                proxyOptions.protected.x = proxyOptions.protected.x + privateState.increment;
                 return proxyOptions.x;
             }
         });
         if (rebase !== Extension.prototype && options.protected) {
             options.protected = Object.create(proxyOptions.protected);
-            $.extend(options, {
+            $.extend(options.protected, {
                 get initialX () {
                     return privateState.initialX;
                 },
@@ -47,6 +47,7 @@
         }
         var repl = new Replacement();
         repl.x = privateState.initialX;
+        return repl;
     }
     Extension.prototype = Object.create(Base.prototype);
     $.extend(Extension.prototype, {
