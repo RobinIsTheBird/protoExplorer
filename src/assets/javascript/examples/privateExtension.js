@@ -17,6 +17,7 @@
         var Replacement = function () {};
         Replacement.prototype = Object.create(Object.getPrototypeOf(proxy));
         $.extend(Replacement.prototype, {
+            constructor: Replacement,
             reset: function () { // Override
                 proxyOptions.x = privateState.initialX;
             },
