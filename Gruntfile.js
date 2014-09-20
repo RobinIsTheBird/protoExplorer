@@ -6,7 +6,7 @@ module.exports = function(grunt) {
             options: {
                 proto: true
             },
-            all: ['Gruntfile.js', 'src/assets/javascript/unshared/*.js']
+            all: ['Gruntfile.js', 'src/assets/javascript/unshared/*.js', 'src/assets/javascript/examples/*.js']
         }
     });
     // Load the jshint plugin.
