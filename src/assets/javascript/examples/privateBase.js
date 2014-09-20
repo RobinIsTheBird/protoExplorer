@@ -12,6 +12,9 @@
             constructor: Replacement,
             next: function () {
                 return ++privateState.x;
+            },
+            reset: function () {
+                privateState.x = 0;
             }
         });
         if (rebase !== Base.prototype && options.protected) {
