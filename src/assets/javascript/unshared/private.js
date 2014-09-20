@@ -1,25 +1,6 @@
 (function () {
     'use strict';
 
-    var BaseHello = function (options) {
-        this._hello = options && options.hello || 'Hello';
-        this._world = options && options.world || 'World';
-        this._sampleSelector = options && options.sampleSelector || '#private';
-        this._helloSelector = options && options.helloSelector || '.base.level span.hello';
-        this._worldSelector = options && options.worldSelector || '.base.level span.world';
-        this._$sample = $(this._sampleSelector);
-        this._$helloSpan = this._$sample.find(this._helloSelector);
-        this._$worldSpan = this._$sample.find(this._worldSelector);
-        this._$helloDiv = $(this._$helloSpan).parent('.hello');
-        this._$worldDiv = $(this._$worldSpan).parent('.world');
-        this._$worldEdit = this._$worldInput = null;
-    };
-    Object.defineProperty(BaseHello, 'namespace', {
-        writable: false,
-        enumerable: true,
-        configurable: false,
-        value: 'privateBaseHello'
-    });
     function stopPropagation (ev) {
         if (!!ev) {
             ev.stopPropagation();
@@ -30,63 +11,128 @@
             ev.preventDefault();
         }
     }
-    BaseHello.prototype = {
-        sup: Object.prototype,
-        constructor: BaseHello,
-        greet: function () {
-            this.render();
-            this._$helloSpan.text(this._hello);
-            this._$worldSpan.text(this._world);
-            this._$worldEdit.css('left', this._$worldDiv.position().left);
-            this.listen();
-            return this;
-        },
-        render: function () {
-            this._$helloSpan.empty();
-            this._$worldSpan.empty();
-            this._$worldEdit = $('<div class="world-edit editor hidden">' +
-                '<input type="text" maxlength="30"></div>')
-                .appendTo(this._$worldDiv);
-            this._$worldInput = this._$worldEdit.children('input');
-            return this;
-        },
-        listen: function () {
-            this._$worldSpan.on('click.' + BaseHello.namespace, this.editWorld.bind(this));
-            this.handleCommitment(true);
-            return this;
-        },
-        handleCommitment: function (on) {
-            this._$worldInput.off('change.' + BaseHello.namespace);
-            if (on) {
-                this._$worldInput.on('change.' + BaseHello.namespace, this.commitWorld.bind(this));
-            }
-            return this;
-        },
-        editWorld: function (ev) {
-            stopPropagation(ev);
-            this._$worldInput
-                .val(this._world);
-            this._$worldEdit.removeClass('hidden');
-            this._$worldInput
-                .focus();
-            $('body').off('click.' + BaseHello.namespace);
-            $('body').one('click.' + BaseHello.namespace, function (ev) {
-                if (ev.target !== this._$worldInput.get(0)) {
-                    this._$worldEdit.addClass('hidden');
-                    this._$worldEdit.trigger('world-edit-done');
+
+    var BaseHello = function (options) {
+        options = options || {};
+        var privateState = $.extend({
+            hello: 'Hello',
+            world: 'World',
+            sampleSelector: '#private',
+            helloSelector: '.base.level span.hello',
+            worldSelector: '.base.level span.world'
+        }, options);
+        privateState.$sample = $(privateState.sampleSelector);
+        privateState.$helloSpan = privateState.$sample.find(privateState.helloSelector);
+        privateState.$worldSpan = privateState.$sample.find(privateState.worldSelector);
+        privateState.$helloDiv = $(privateState.$helloSpan).parent('.hello');
+        privateState.$worldDiv = $(privateState.$worldSpan).parent('.world');
+        privateState.$worldEdit = privateState.$worldInput = null;
+        var rebase = options.base instanceof BaseHello && options.base || BaseHello.prototype;
+        var Replacement = function () {};
+        Replacement.prototype = Object.create(rebase);
+        $.extend(Replacement.prototype, {
+            constructor: Replacement,
+            greet: function () {
+                this.render();
+                privateState.$helloSpan.text(privateState.hello);
+                privateState.$worldSpan.text(privateState.world);
+                privateState.$worldEdit.css('left', privateState.$worldDiv.position().left);
+                this.listen();
+                return this;
+            },
+            render: function () {
+                privateState.$helloSpan.empty();
+                privateState.$worldSpan.empty();
+                privateState.$worldEdit = $('<div class="world-edit editor hidden">' +
+                    '<input type="text" maxlength="30"></div>')
+                    .appendTo(privateState.$worldDiv);
+                privateState.$worldInput = privateState.$worldEdit.children('input');
+                return this;
+            },
+            listen: function () {
+                privateState.$worldSpan.on('click.' + BaseHello.namespace, this.editWorld.bind(this));
+                this.handleCommitment(true);
+                return this;
+            },
+            handleCommitment: function (on) {
+                privateState.$worldInput.off('change.' + BaseHello.namespace);
+                if (on) {
+                    privateState.$worldInput.on('change.' + BaseHello.namespace, this.commitWorld.bind(this));
                 }
-            }.bind(this));
-            return this;
-        },
-        commitWorld: function (ev) {
-            this._world = this._$worldInput.val();
-            this._$worldSpan
-                .empty()
-                .text(this._world);
-            this._$worldEdit.addClass('hidden');
-            this._$worldEdit.trigger('world-edit-committed');
-            return this;
+                return this;
+            },
+            editWorld: function (ev) {
+                stopPropagation(ev);
+                privateState.$worldInput
+                    .val(privateState.world);
+                privateState.$worldEdit.removeClass('hidden');
+                privateState.$worldInput
+                    .focus();
+                $('body').off('click.' + BaseHello.namespace);
+                $('body').one('click.' + BaseHello.namespace, function (ev) {
+                    if (ev.target !== privateState.$worldInput.get(0)) {
+                        privateState.$worldEdit.addClass('hidden');
+                        privateState.$worldEdit.trigger('world-edit-done');
+                    }
+                }.bind(this));
+                return this;
+            },
+            commitWorld: function (ev) {
+                privateState.world = privateState.$worldInput.val();
+                privateState.$worldSpan
+                    .empty()
+                    .text(privateState.world);
+                privateState.$worldEdit.addClass('hidden');
+                privateState.$worldEdit.trigger('world-edit-committed');
+                return this;
+            }
+        });
+        if (rebase !== BaseHello.prototype && options.protected) {
+            options.protected = {
+                get $worldEdit () {
+                    return privateState.$worldEdit;
+                },
+                get $sample () {
+                    return privateState.$sample;
+                },
+                get $helloSpan () {
+                    return privateState.$helloSpan;
+                },
+                get $worldSpan () {
+                    return privateState.$worldSpan;
+                },
+                get $helloDiv () {
+                    return privateState.$helloDiv;
+                },
+                get $worldDiv () {
+                    return privateState.$worldDiv;
+                },
+                get hello () {
+                    return privateState.hello;
+                },
+                set hello (_hello) {
+                    privateState.hello = _hello;
+                    return privateState.hello;
+                },
+                get world () {
+                    return privateState.world;
+                },
+                set world (_world) {
+                    privateState.world = _world;
+                    return privateState.world;
+                }
+            };
         }
+        return new Replacement();
+    };
+    Object.defineProperty(BaseHello, 'namespace', {
+        writable: false,
+        enumerable: true,
+        configurable: false,
+        value: 'privateBaseHello'
+    });
+    BaseHello.prototype = {
+        constructor: BaseHello
     };
     var myBaseHello = new BaseHello();
     myBaseHello.greet();
@@ -215,8 +261,8 @@
             return this;
         }
     });
-    var myHelloList = new HelloList();
-    myHelloList.greet();
+//    var myHelloList = new HelloList();
+//    myHelloList.greet();
 
     var HelloTypeahead = function (options) {
         options = options || {};
@@ -294,6 +340,6 @@
             }
         }
     });
-    var myHelloTypeahead = new HelloTypeahead();
-    myHelloTypeahead.greet();
+//    var myHelloTypeahead = new HelloTypeahead();
+//    myHelloTypeahead.greet();
 })();
