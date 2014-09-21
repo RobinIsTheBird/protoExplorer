@@ -32,6 +32,7 @@
         Replacement.prototype = Object.create(rebase);
         $.extend(Replacement.prototype, {
             constructor: Replacement,
+            name: 'BaseHello Replacement',
             greet: function () {
                 this.render();
                 privateState.$helloSpan.text(privateState.hello);
@@ -132,17 +133,82 @@
         value: 'privateBaseHello'
     });
     BaseHello.prototype = {
-        constructor: BaseHello
+        constructor: BaseHello,
+        name: 'BaseHello'
     };
     var myBaseHello = new BaseHello();
     myBaseHello.greet();
 
     var HelloList = function (options) {
         options = options || {};
-        options.helloSelector = options.helloSelector || '.first.level span.hello';
-        options.worldSelector = options.worldSelector || '.first.level span.world';
-        BaseHello.call(this, options);
-        this._worldList = [ this._world ];
+        var privateState = {};
+        var rebase = options.base instanceof HelloList && options.base || HelloList.prototype;
+        var proxyOptions = $.extend({}, {
+            helloSelector: '.first.level span.hello',
+            worldSelector: '.first.level span.world'
+        }, options, {
+            protected: true,
+            base: rebase
+        });
+        var proxy = new BaseHello(proxyOptions);
+        var Replacement = function () {};
+        Replacement.prototype = Object.create(Object.getPrototypeOf(proxy));
+        $.extend(Replacement.prototype, {
+            sup: '?',
+            constructor: Replacement,
+            name: 'HelloList Replacement',
+            render: function () {
+                proxy.render();
+                privateState.$choiceButton = $('<button class="world-choice ">' +
+                    '<div class="down-arrow">Expand Choices</div></button>')
+                    .appendTo(proxyOptions.protected.$worldEdit);
+                privateState.$choiceDropdown = $( '<ul class="world-choice drop-down hidden"><li><a href="#">' +
+                    proxyOptions.protected.world +
+                    '</a></li></ul>')
+                    .appendTo(proxyOptions.protected.$worldEdit);
+                privateState.$choiceDropdown.find('a')
+                    .data('val', proxyOptions.protected.world);
+                return this;
+            },
+            listen: function () {
+                proxy.listen();
+                privateState.$choiceButton.on('click.' + HelloList.namespace, this.toggleButtonFeedback.bind(this));
+                return this;
+            },
+            toggleButtonFeedback: function (ev) {
+                var $arrow = privateState.$choiceButton.children('div');
+                stopPropagation(ev);
+                privateState.$choiceDropdown.toggleClass('hidden');
+                $arrow.toggleClass('down-arrow up-arrow');
+                $arrow.empty()
+                    .text($arrow.is('.down-arrow') ? 'Expand Choices' : 'Collapse Choices');
+//                this.handleBodyClick(!this._$choiceDropdown.is('hidden'));
+                return this;
+            }
+        });
+        privateState.worldList = [ proxyOptions.protected.world ];
+        privateState.$choiceButton = null;
+        if (rebase != HelloList.prototype && options.protected) {
+            options.protected = Object.create(proxyOptions.protected);
+            $.extend(options.protected, {
+                get worldListCount () {
+                    return privateState.worldList.length;
+                },
+                get worldListItems () {
+                    return privateState.worldList.slice(0);
+                },
+                get $choiceButton () {
+                    return privateState.$choiceButton;
+                },
+                get $choiceDropdown () {
+                    return privateState.$choiceDropdown;
+                },
+                removeFromWorldList: function (items) {
+                    return privateState.worldList.slice(0);
+                }
+            });
+        }
+        return new Replacement();
     };
     Object.defineProperty(HelloList, 'namespace', {
         writable: false,
@@ -153,20 +219,9 @@
     var hlp = HelloList.prototype = Object.create(BaseHello.prototype);
     $.extend(hlp, {
         sup: BaseHello.prototype,
-        constructor: HelloList,
-        render: function () {
-            hlp.sup.render.call(this);
-            this._$choiceButton = $('<button class="world-choice ">' +
-                '<div class="down-arrow">Expand Choices</div></button>')
-                .appendTo(this._$worldEdit);
-            this._$choiceDropdown = $( '<ul class="world-choice drop-down hidden"><li><a href="#">' +
-                this._world +
-                '</a></li></ul>')
-                .appendTo(this._$worldEdit);
-            this._$choiceDropdown.find('a')
-                .data('val', this._world);
-            return this;
-        },
+        name: 'HelloList',
+        constructor: HelloList
+/*
         listen: function () {
             hlp.sup.listen.call(this);
             this._$choiceButton.on('click.' + HelloList.namespace, this.toggleButtonFeedback.bind(this));
@@ -176,6 +231,8 @@
             this._$choiceDropdown.find('li>a').on('click.' + HelloList.namespace, preventDefault);
             return this;
         },
+*/
+/*
         handleInputChange: function (on) {
             this.handleCommitment(false);
             this._$worldInput.off('change.' + HelloList.namespace);
@@ -260,9 +317,10 @@
             }
             return this;
         }
+*/
     });
-//    var myHelloList = new HelloList();
-//    myHelloList.greet();
+    var myHelloList = new HelloList();
+    myHelloList.greet();
 
     var HelloTypeahead = function (options) {
         options = options || {};
