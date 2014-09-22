@@ -194,6 +194,21 @@
                 privateState.$choiceDropdown.find('li>a').on('click.' + HelloList.namespace, preventDefault);
             }
         };
+        var prepareToChoose = function (ev) {
+            stopPropagation(ev);
+            this.handleInputChange(false);
+            privateState.$choiceDropdown.on('click.' + HelloList.namespace, 'li>a', choose.bind(this));
+        };
+        var choose = function (ev) {
+            var val = $(ev.target).data('val');
+            stopPropagation(ev);
+            preventDefault(ev);
+            buttonFeedbackOff();
+            proxyOptions.protected.$worldInput.val(val);
+            this.commitWorld();
+            privateState.$choiceDropdown.off('click.' + HelloList.namespace);
+            this.handleInputChange(true);
+        };
         var privateState = {};
         var rebase = options.base instanceof HelloList && options.base || HelloList.prototype;
         var proxyOptions = $.extend({}, {
@@ -225,9 +240,13 @@
             },
             handleInputChange: handleInputChange,
             addChoice: addChoice,
+            prepareToChoose: prepareToChoose,
+            choose: choose,
             listen: function () {
                 proxy.listen();
                 privateState.$choiceButton.on('click.' + HelloList.namespace, toggleButtonFeedback.bind(this));
+                privateState.$choiceDropdown.on('mousedown.' + HelloList.namespace, prepareToChoose.bind(this));
+                privateState.$choiceDropdown.on('click.' + HelloList.namespace, 'li>a', choose.bind(this));
                 this.handleInputChange(true);
                 return this;
             }
@@ -293,23 +312,6 @@
                     }
                 }.bind(this));
             }
-            return this;
-        },
-        prepareToChoose: function (ev) {
-            stopPropagation(ev);
-            this.handleInputChange(false);
-            this._$choiceDropdown.on('click.' + HelloList.namespace, 'li>a', this.choose.bind(this));
-            return this;
-        },
-        choose: function (ev) {
-            var val = $(ev.target).data('val');
-            stopPropagation(ev);
-            preventDefault(ev);
-            this.buttonFeedbackOff();
-            this._$worldInput.val(val);
-            this.commitWorld();
-            this._$choiceDropdown.off('click.' + HelloList.namespace);
-            this.handleInputChange(true);
             return this;
         },
 */
