@@ -90,6 +90,9 @@
         });
         if (rebase !== BaseHello.prototype && options.protected) {
             options.protected = {
+                get $worldInput () {
+                    return privateState.$worldInput;
+                },
                 get $worldEdit () {
                     return privateState.$worldEdit;
                 },
@@ -141,6 +144,56 @@
 
     var HelloList = function (options) {
         options = options || {};
+        var buttonFeedbackOff = function () {
+            if (!privateState.$choiceDropdown.is('.hidden')) {
+                toggleButtonFeedback();
+            }
+        };
+        var toggleButtonFeedback = function (ev) {
+            var $arrow = privateState.$choiceButton.children('div');
+            stopPropagation(ev);
+            privateState.$choiceDropdown.toggleClass('hidden');
+            $arrow.toggleClass('down-arrow up-arrow');
+            $arrow.empty()
+                .text($arrow.is('.down-arrow') ? 'Expand Choices' : 'Collapse Choices');
+//                handleBodyClick(!privateState.$choiceDropdown.is('hidden'));
+        };
+        var handleInputChange = function (on) {
+            this.handleCommitment(false);
+            proxyOptions.protected.$worldInput.off('change.' + HelloList.namespace);
+            if (on) {
+                proxyOptions.protected.$worldInput.on('change.' + HelloList.namespace, addChoice.bind(this));
+            }
+        };
+        var addChoice = function (ev) {
+            var val = proxyOptions.protected.$worldInput.val();
+            this.commitWorld(ev);
+            if (0 === $.grep(privateState.worldList, function (option) {
+                return val === option;
+            }).length) {
+                privateState.$choiceDropdown.find('li>a').off('click.' + HelloList.namespace);
+                privateState.worldList.push(val);
+                privateState.worldList.sort(function (a, b) {
+                    a = a.toLowerCase();
+                    b = b.toLowerCase();
+                    if (a < b) {
+                        return -1;
+                    } else if (b < a) {
+                        return 1;
+                    }
+                    return 0;
+                });
+                privateState.$choiceDropdown.empty();
+                privateState.worldList.forEach(function (aWorld) {
+                    $('<li><a href="#">' + aWorld + '</a></li>')
+                        .appendTo(privateState.$choiceDropdown)
+                        .children('a')
+                        .data('val', aWorld);
+                });
+                buttonFeedbackOff();
+                privateState.$choiceDropdown.find('li>a').on('click.' + HelloList.namespace, preventDefault);
+            }
+        };
         var privateState = {};
         var rebase = options.base instanceof HelloList && options.base || HelloList.prototype;
         var proxyOptions = $.extend({}, {
@@ -170,19 +223,12 @@
                     .data('val', proxyOptions.protected.world);
                 return this;
             },
+            handleInputChange: handleInputChange,
+            addChoice: addChoice,
             listen: function () {
                 proxy.listen();
-                privateState.$choiceButton.on('click.' + HelloList.namespace, this.toggleButtonFeedback.bind(this));
-                return this;
-            },
-            toggleButtonFeedback: function (ev) {
-                var $arrow = privateState.$choiceButton.children('div');
-                stopPropagation(ev);
-                privateState.$choiceDropdown.toggleClass('hidden');
-                $arrow.toggleClass('down-arrow up-arrow');
-                $arrow.empty()
-                    .text($arrow.is('.down-arrow') ? 'Expand Choices' : 'Collapse Choices');
-//                this.handleBodyClick(!this._$choiceDropdown.is('hidden'));
+                privateState.$choiceButton.on('click.' + HelloList.namespace, toggleButtonFeedback.bind(this));
+                this.handleInputChange(true);
                 return this;
             }
         });
@@ -205,7 +251,10 @@
                 },
                 removeFromWorldList: function (items) {
                     return privateState.worldList.slice(0);
-                }
+                },
+                toggleButtonFeedback: toggleButtonFeedback,
+                buttonFeedbackOff: buttonFeedbackOff,
+                handleInputChange: handleInputChange
             });
         }
         return new Replacement();
@@ -233,14 +282,6 @@
         },
 */
 /*
-        handleInputChange: function (on) {
-            this.handleCommitment(false);
-            this._$worldInput.off('change.' + HelloList.namespace);
-            if (on) {
-                this._$worldInput.on('change.' + HelloList.namespace, this.addChoice.bind(this));
-            }
-            return this;
-        },
         handleBodyClick: function (on) {
             $('body').off('click.' + HelloList.namespace);
             if (on) {
@@ -252,22 +293,6 @@
                     }
                 }.bind(this));
             }
-            return this;
-        },
-        buttonFeedbackOff: function () {
-            if (!this._$choiceDropdown.is('.hidden')) {
-                this.toggleButtonFeedback();
-            }
-            return this;
-        },
-        toggleButtonFeedback: function (ev) {
-            var $arrow = this._$choiceButton.children('div');
-            stopPropagation(ev);
-            this._$choiceDropdown.toggleClass('hidden');
-            $arrow.toggleClass('down-arrow up-arrow');
-            $arrow.empty()
-                .text($arrow.is('.down-arrow') ? 'Expand Choices' : 'Collapse Choices');
-            this.handleBodyClick(!this._$choiceDropdown.is('hidden'));
             return this;
         },
         prepareToChoose: function (ev) {
@@ -287,36 +312,6 @@
             this.handleInputChange(true);
             return this;
         },
-        addChoice: function (ev) {
-            var val = this._$worldInput.val();
-            this.commitWorld(ev);
-            if (0 === $.grep(this._worldList, function (option) {
-                return val === option;
-            }).length) {
-                this._$choiceDropdown.find('li>a').off('click.' + HelloList.namespace);
-                this._worldList.push(val);
-                this._worldList.sort(function (a, b) {
-                    a = a.toLowerCase();
-                    b = b.toLowerCase();
-                    if (a < b) {
-                        return -1;
-                    } else if (b < a) {
-                        return 1;
-                    }
-                    return 0;
-                });
-                this._$choiceDropdown.empty();
-                this._worldList.forEach(function (aWorld) {
-                    $('<li><a href="#">' + aWorld + '</a></li>')
-                        .appendTo(this._$choiceDropdown)
-                        .children('a')
-                        .data('val', aWorld);
-                }.bind(this));
-                this.buttonFeedbackOff();
-                this._$choiceDropdown.find('li>a').on('click.' + HelloList.namespace, preventDefault);
-            }
-            return this;
-        }
 */
     });
     var myHelloList = new HelloList();
