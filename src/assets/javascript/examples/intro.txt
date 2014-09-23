@@ -3,4 +3,4 @@ robin@likethebird.com
 @RobinIsTheBird
 https://github.com/RobinIsTheBird/protoExplorer
 
-Private Variables
+Private Member Variables
