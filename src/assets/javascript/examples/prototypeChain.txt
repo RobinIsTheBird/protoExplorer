@@ -3,3 +3,8 @@ Extension Replacement
 Base Replacement
 Extension
 Base
+
+Subclasses can extend indefinitely
+keeping private variables private
+answering instanceof correctly
+with overrides and fall-throughs
