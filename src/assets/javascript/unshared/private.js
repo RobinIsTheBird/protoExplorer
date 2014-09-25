@@ -7,7 +7,7 @@
         }
     }
     function preventDefault (ev) {
-        if (!ev) {
+        if (!!ev) {
             ev.preventDefault();
         }
     }
@@ -156,7 +156,7 @@
             $arrow.toggleClass('down-arrow up-arrow');
             $arrow.empty()
                 .text($arrow.is('.down-arrow') ? 'Expand Choices' : 'Collapse Choices');
-//                handleBodyClick(!privateState.$choiceDropdown.is('hidden'));
+                handleBodyClick(!privateState.$choiceDropdown.is('hidden'));
         };
         var handleInputChange = function (on) {
             this.handleCommitment(false);
@@ -209,6 +209,19 @@
             privateState.$choiceDropdown.off('click.' + HelloList.namespace);
             this.handleInputChange(true);
         };
+        var handleBodyClick = function (on) {
+            var click = 'click.' + HelloList.namespace;
+            $('body').off(click);
+            if (on) {
+                $('body').one(click, function (ev) {
+                    if (ev.target !== proxyOptions.protected.$worldInput.get(0) &&
+                        !privateState.$choiceDropdown.is($(ev.target)) &&
+                        0 === privateState.$choiceDropdown.has($(ev.target)).length) {
+                        buttonFeedbackOff();
+                    }
+                });
+            }
+        };
         var privateState = {};
         var rebase = options.base instanceof HelloList && options.base || HelloList.prototype;
         var proxyOptions = $.extend({}, {
@@ -248,6 +261,7 @@
                 privateState.$choiceDropdown.on('mousedown.' + HelloList.namespace, prepareToChoose.bind(this));
                 privateState.$choiceDropdown.on('click.' + HelloList.namespace, 'li>a', choose.bind(this));
                 this.handleInputChange(true);
+                privateState.$choiceDropdown.find('li>a').on('click.' + HelloList.namespace, preventDefault);
                 return this;
             }
         });
@@ -289,32 +303,6 @@
         sup: BaseHello.prototype,
         name: 'HelloList',
         constructor: HelloList
-/*
-        listen: function () {
-            hlp.sup.listen.call(this);
-            this._$choiceButton.on('click.' + HelloList.namespace, this.toggleButtonFeedback.bind(this));
-            this._$choiceDropdown.on('mousedown.' + HelloList.namespace, this.prepareToChoose.bind(this));
-            this._$choiceDropdown.on('click.' + HelloList.namespace, 'li>a', this.choose.bind(this));
-            this.handleInputChange(true);
-            this._$choiceDropdown.find('li>a').on('click.' + HelloList.namespace, preventDefault);
-            return this;
-        },
-*/
-/*
-        handleBodyClick: function (on) {
-            $('body').off('click.' + HelloList.namespace);
-            if (on) {
-                $('body').one('click.' + HelloList.namespace, function (ev) {
-                    if (ev.target !== this._$worldInput.get(0) &&
-                        !this._$choiceDropdown.is($(ev.target)) &&
-                        0 === this._$choiceDropdown.has($(ev.target)).length) {
-                        this.buttonFeedbackOff();
-                    }
-                }.bind(this));
-            }
-            return this;
-        },
-*/
     });
     var myHelloList = new HelloList();
     myHelloList.greet();

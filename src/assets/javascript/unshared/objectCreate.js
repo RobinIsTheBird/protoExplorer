@@ -26,7 +26,7 @@
         }
     }
     function preventDefault (ev) {
-        if (!ev) {
+        if (!!ev) {
             ev.preventDefault();
         }
     }
