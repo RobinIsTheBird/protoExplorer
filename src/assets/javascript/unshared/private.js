@@ -267,27 +267,57 @@
         });
         privateState.worldList = [ proxyOptions.protected.world ];
         privateState.$choiceButton = null;
+        privateState.$choiceDropdown = null;
         if (rebase != HelloList.prototype && options.protected) {
-            options.protected = Object.create(proxyOptions.protected);
-            $.extend(options.protected, {
-                get worldListCount () {
-                    return privateState.worldList.length;
+            // Property definitions on Object.create are necessary because
+            // $.extend does not preserve getters and setters.
+            options.protected = Object.create(proxyOptions.protected, {
+                worldListCount: {
+                    get: function () {
+                        return privateState.worldList.length;
+                    },
+                    enumerable: true,
+                    configurable: false
                 },
-                get worldListItems () {
-                    return privateState.worldList.slice(0);
+                worldListItems: {
+                    get: function () {
+                        return privateState.worldList.slice(0);
+                    },
+                    enumerable: true,
+                    configurable: false
                 },
-                get $choiceButton () {
-                    return privateState.$choiceButton;
+                $choiceButton: {
+                    get: function () {
+                        return privateState.$choiceButton;
+                    },
+                    enumerable: true,
+                    configurable: false
                 },
-                get $choiceDropdown () {
-                    return privateState.$choiceDropdown;
+                $choiceDropdown: {
+                    get: function () {
+                        return privateState.$choiceDropdown;
+                    },
+                    enumerable: true,
+                    configurable: false
                 },
-                removeFromWorldList: function (items) {
-                    return privateState.worldList.slice(0);
+                toggleButtonFeedback: {
+                    value: toggleButtonFeedback,
+                    writeable: false,
+                    enumerable: true,
+                    configurable: false
                 },
-                toggleButtonFeedback: toggleButtonFeedback,
-                buttonFeedbackOff: buttonFeedbackOff,
-                handleInputChange: handleInputChange
+                buttonFeedbackOff: {
+                    value: buttonFeedbackOff,
+                    writeable: false,
+                    enumerable: true,
+                    configurable: false
+                },
+                handleInputChange: {
+                    value: handleInputChange,
+                    writeable: false,
+                    enumerable: true,
+                    configurable: false
+                },
             });
         }
         return new Replacement();
@@ -311,59 +341,43 @@
         options = options || {};
         options.helloSelector = options.helloSelector || '.second.level span.hello';
         options.worldSelector = options.worldSelector || '.second.level span.world';
-        HelloList.call(this, options);
-    };
-    Object.defineProperty(HelloTypeahead, 'namespace', {
-        writable: false,
-        enumerable: true,
-        configurable: false,
-        value: 'objectCreateHelloTypeahead'
-    });
-    var htp = HelloTypeahead.prototype = Object.create(HelloList.prototype);
-    $.extend(htp, {
-        sup: HelloList.prototype,
-        constructor: HelloTypeahead,
-        listen: function () {
-            htp.sup.listen.call(this);
-            this.handleStartTypeahead(true);
-            // this._$worldInput.on('change.' + HelloTypeahead.namespace, this.endTypeahead.bind(this));
-            this._$worldEdit.on('world-edit-commit.' + HelloTypeahead.namespace + ' ' +
-                'world-edit-done.' + HelloTypeahead.namespace, this.endTypeahead.bind(this));
+        var listen = function () {
+            proxy.listen();
+            handleStartTypeahead(true);
+            proxyOptions.protected.$worldEdit.on('world-edit-commit.' + HelloTypeahead.namespace + ' ' +
+                'world-edit-done.' + HelloTypeahead.namespace, endTypeahead);
             return this;
-        },
-        handleStartTypeahead: function (on) {
-            this._$worldSpan.off('click.' + HelloTypeahead.namespace);
+        };
+        var handleStartTypeahead = function (on) {
+            proxyOptions.protected.$worldSpan.off('click.' + HelloTypeahead.namespace);
             if (on) {
-                this._$worldSpan.on('click.' + HelloTypeahead.namespace, this.startTypeahead.bind(this));
+                proxyOptions.protected.$worldSpan.on('click.' + HelloTypeahead.namespace, startTypeahead);
             }
-            return this;
-        },
-        startTypeahead: function () {
-            this._$worldInput.off('keyup.' + HelloTypeahead.namespace);
-            this._$worldInput.on('keyup.' + HelloTypeahead.namespace, this.doTypeahead.bind(this));
-            return this;
-        },
-        endTypeahead: function () {
-            this._$worldInput.off('keyup.' + HelloTypeahead.namespace);
-            this._$choiceDropdown
+        };
+        var startTypeahead = function () {
+            proxyOptions.protected.$worldInput.off('keyup.' + HelloTypeahead.namespace);
+            proxyOptions.protected.$worldInput.on('keyup.' + HelloTypeahead.namespace, doTypeahead);
+        };
+        var endTypeahead = function () {
+            proxyOptions.protected.$worldInput.off('keyup.' + HelloTypeahead.namespace);
+            proxyOptions.protected.$choiceDropdown
                 .find('li')
                 .removeClass('hidden')
                 .find('a')
                 .removeClass('hidden');
-            this.buttonFeedbackOff();
-            return this;
-        },
-        doTypeahead: function (ev) {
+            proxyOptions.protected.buttonFeedbackOff();
+        };
+        var doTypeahead = function (ev) {
             var BACKSPACE = 8;
             var found;
             var count;
-            var val = this._$worldInput.val();
+            var val = proxyOptions.protected.$worldInput.val();
             if ('!'.charCodeAt(0) < ev.which < '~'.charCodeAt(0) || BACKSPACE === ev.which) {
-                found = $.grep(this._worldList, function (option) {
+                found = $.grep(proxyOptions.protected.worldListItems, function (option) {
                     return 0 === option.indexOf(val);
                 });
                 count = found.length;
-                this._$choiceDropdown
+                proxyOptions.protected.$choiceDropdown
                     .find('li')
                     .each(function () {
                         var $li = $(this);
@@ -376,13 +390,47 @@
                             found.shift();
                         }
                     });
-                if (0 < count && this._$choiceDropdown.is('.hidden') ||
-                    0 === count && !this._$choiceDropdown.is('.hidden')) {
-                    this.toggleButtonFeedback();
+                if (0 < count && proxyOptions.protected.$choiceDropdown.is('.hidden') ||
+                    0 === count && !proxyOptions.protected.$choiceDropdown.is('.hidden')) {
+                    proxyOptions.protected.toggleButtonFeedback();
                 }
             }
+        };
+        var privateState = {};
+        var rebase = options.base instanceof HelloTypeahead && options.base || HelloTypeahead.prototype;
+        var proxyOptions = $.extend({}, {
+            helloSelector: '.second.level span.hello',
+            worldSelector: '.second.level span.world'
+        }, options, {
+            protected: true,
+            base: rebase
+        });
+        var proxy = new HelloList(proxyOptions);
+        var Replacement = function () {};
+        Replacement.prototype = Object.create(Object.getPrototypeOf(proxy));
+        $.extend(Replacement.prototype, {
+            sup: '?',
+            constructor: Replacement,
+            name: 'HelloList Replacement',
+            listen: listen
+        });
+        if (rebase != HelloTypeahead.prototype && options.protected) {
+            options.protected = Object.create(proxyOptions.protected);
         }
+        return new Replacement();
+    };
+    Object.defineProperty(HelloTypeahead, 'namespace', {
+        writable: false,
+        enumerable: true,
+        configurable: false,
+        value: 'objectCreateHelloTypeahead'
     });
-//    var myHelloTypeahead = new HelloTypeahead();
-//    myHelloTypeahead.greet();
+    var htp = HelloTypeahead.prototype = Object.create(HelloList.prototype);
+    $.extend(htp, {
+        sup: HelloList.prototype,
+        name: 'HelloTypeahead',
+        constructor: HelloTypeahead
+    });
+    var myHelloTypeahead = new HelloTypeahead();
+    myHelloTypeahead.greet();
 })();
