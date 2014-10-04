@@ -433,4 +433,41 @@
     });
     var myHelloTypeahead = new HelloTypeahead();
     myHelloTypeahead.greet();
+
+    var $ul = $('#private').find('.details ul');
+    $ul.append('<li>' + (myHelloTypeahead instanceof HelloTypeahead ? '' : 'is not ') +
+        'instanceof HelloTypeahead</li>');
+    $ul.append('<li>' + (myHelloTypeahead instanceof HelloList ? '' : 'is not ') +
+        'instanceof HelloList</li>');
+    $ul.append('<li>' + (myHelloTypeahead instanceof BaseHello ? '' : 'is not ') +
+        'instanceof BaseHello</li>');
+
+    var proto, protoCount = 1, found = { listen: 0, choose: 0, greet: 0 };
+    for (proto = Object.getPrototypeOf(myHelloTypeahead);
+        proto !== Object.prototype;
+        proto = Object.getPrototypeOf(proto), ++protoCount) {
+
+        $ul.append('<li>' +
+            'Object.getPrototypeOf ^ ' + protoCount.toString() + '(myHelloTypeahead) is ' +
+            proto.name + '.prototype</li>');
+
+        if (!found.listen && proto.hasOwnProperty('listen')) {
+            found.listen = true;
+            $ul.append('<li>' +
+                'listen is in ' +
+                'Object.getPrototypeOf ^ ' + protoCount.toString() + '(myHelloTypeahead)</li>');
+        }
+        if (!found.choose && proto.hasOwnProperty('choose')) {
+            found.choose = true;
+            $ul.append('<li>' +
+                'choose is in ' +
+                'Object.getPrototypeOf ^ ' + protoCount.toString() + '(myHelloTypeahead)</li>');
+        }
+        if (!found.greet && proto.hasOwnProperty('greet')) {
+            found.greet = true;
+            $ul.append('<li>' +
+                'greet is in ' +
+                'Object.getPrototypeOf ^ ' + protoCount.toString() + '(myHelloTypeahead)</li>');
+        }
+    }
 })();
