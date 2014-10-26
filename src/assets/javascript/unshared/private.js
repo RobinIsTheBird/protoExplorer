@@ -411,7 +411,7 @@
         $.extend(Replacement.prototype, {
             sup: '?',
             constructor: Replacement,
-            name: 'HelloList Replacement',
+            name: 'HelloTypeahead Replacement',
             listen: listen
         });
         if (rebase != HelloTypeahead.prototype && options.protected) {
