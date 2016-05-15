@@ -4,12 +4,11 @@ function Base (options) {
     options = options || {};
     var privateState = {x : 0};
     var Replacement = function () {};
-    Replacement.prototype = Object.create(Base.prototype);
-    $.extend(Replacement.prototype, {
-        constructor: Replacement,
-        get x () { return privateState.x; },
-        next: function () { return ++privateState.x; }
-    });
+    var proto = Replacement.prototype = Object.create(Base.prototype);
+    proto.constructor = Replacement;
+    Object.defineProperty(proto, 'x', {
+        get: function () { return privateState.x; }});
+    proto.next = function () { return ++privateState.x;
     return new Replacement();
 }
 Base.prototype = {constructor: Base};
