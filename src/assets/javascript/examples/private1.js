@@ -1,17 +1,10 @@
-(function ($) {
-    'use strict';
+'use strict';
 
-    function Base () {
-        var privateState = { x : 0 };
-        $.extend(this, {
-            get x () {
-                return privateState.x;
-            },
-            next: function () {
-                return ++privateState.x;
-            }
-        });
-    }
-    Base.prototype = { constructor: Base };
-    return Base;
-})();
+function Base () {
+    var privateState = {x : 0};
+    Object.defineProperty(this, 'x', {
+        get: function () { return privateState.x; }});
+    this.next = function () { return ++privateState.x; };
+}
+Base.prototype = {constructor: Base};
+module.exports = Base;

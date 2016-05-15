@@ -3,4 +3,4 @@ robin@likethebird.com
 @RobinIsTheBird
 https://github.com/RobinIsTheBird/protoExplorer
 
-Private Member Variables
+Private & Protected Member Variables in JavaScript

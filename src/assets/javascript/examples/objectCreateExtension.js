@@ -1,17 +1,13 @@
-(function ($, Base) {
-    'use strict';
+'use strict';
 
-    function Extension (options) {
-        options = options || {};
-        Base.call(this, options);
-        if (options.hasOwnProperty('x')) {
-            this._privateState.x = options.x;
-        }
+function Extension (options) {
+    options = options || {};
+    Base.call(this, options);
+    if (options.hasOwnProperty('x')) {
+        this._privateState.x = options.x;
     }
-    Extension.prototype = Object.create(Base.prototype);
-    $.extend(Extension.prototype, {
-        constructor: Extension,
-        prev: function () { return --this._privateState.x; }
-    });
-    return Extension;
-})();
+}
+var proto = Extension.prototype = Object.create(Base.prototype);
+proto.constructor = Extension;
+proto.prev = function () { return --this._privateState.x; };
+module.exports = Extension;
