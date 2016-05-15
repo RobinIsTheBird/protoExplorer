@@ -12,8 +12,6 @@
             }
         });
     }
-    Base.prototype = {
-        constructor: Base
-    };
+    Base.prototype = { constructor: Base };
     return Base;
 })();

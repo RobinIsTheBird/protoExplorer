@@ -8,17 +8,11 @@
         Replacement.prototype = Object.create(Base.prototype);
         $.extend(Replacement.prototype, {
             constructor: Replacement,
-            get x () {
-                return privateState.x;
-            },
-            next: function () {
-                return ++privateState.x;
-            }
+            get x () { return privateState.x; },
+            next: function () { return ++privateState.x; }
         });
         return new Replacement();
     }
-    Base.prototype = {
-        constructor: Base
-    };
+    Base.prototype = { constructor: Base };
     return Base;
 })();

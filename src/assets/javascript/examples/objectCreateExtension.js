@@ -11,9 +11,7 @@
     Extension.prototype = Object.create(Base.prototype);
     $.extend(Extension.prototype, {
         constructor: Extension,
-        prev: function () {
-            return --this._privateState.x;
-        }
+        prev: function () { return --this._privateState.x; }
     });
     return Extension;
 })();

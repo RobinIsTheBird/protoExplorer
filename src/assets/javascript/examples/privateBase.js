@@ -1,35 +1,25 @@
-(function ($) {
-    'use strict';
+'use strict';
 
-    function Base (options) {
-        options = options || {};
-        var privateState = { x : 0 };
-        var rebase = options.base instanceof Base &&
-            options.base || Base.prototype;
-        var Replacement = function () {};
-        Replacement.prototype = Object.create(rebase);
-        $.extend(Replacement.prototype, {
-            constructor: Replacement,
-            next: function () {
-                return ++privateState.x;
-            },
-            reset: function () {
-                privateState.x = 0;
-            }
-        });
-        if (rebase !== Base.prototype && options.protected) {
-            options.protected = {
-                get x () {
-                    return privateState.x;
-                },
-                set x (_x) {
-                    return (privateState.x = _x);
-                }
-            };
-        }
-        return new Replacement();
+var Base = function (options) {
+    var originalProto = this instanceof Base &&
+        Object.getPrototypeOf(this) || Base.prototype;
+    var Replacement = function () {};
+    var proto = Replacement.prototype = Object.create(originalProto);
+
+    var protectedState = {x : 0};
+    proto.constructor = Replacement;
+    proto.next = function () { return ++protectedState.x; },
+    proto.reset = function () { protectedState.x = 0; }
+    Object.defineProperty(proto, 'x',
+        {get: function () { return protectedState.x; }});
+
+    options = options || {};
+    if (originalProto !== Base.prototype && options.protected) {
+        options.protected = {
+            set x (val) { return (protectedState.x = val); }
+        };
     }
-    Base.prototype = {
-        constructor: Base
-    };
-})();
+    return new Replacement();
+}
+Base.prototype = { constructor: Base };
+module.exports = Base;
