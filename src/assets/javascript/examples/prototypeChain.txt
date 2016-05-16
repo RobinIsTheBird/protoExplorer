@@ -1,10 +1,7 @@
-instance
-Extension Replacement
-Base Replacement
-Extension
-Base
-
 Subclasses can extend indefinitely
 keeping private variables private
 answering instanceof correctly
 with overrides and fall-throughs
+
+A lot of boilerplate
+See WIP at https://github.com/RobinIsTheBird/clajs

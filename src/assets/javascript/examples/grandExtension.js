@@ -12,7 +12,8 @@ function Grand (options) {
     // Extension protectd variables
     var proxyOptions = _.extend({protectd: true}, options);
     // proxy's prototype chain is
-    // proxy -> Extension:Replacement -> Base:Replacement -> Extension -> Base
+    // proxy -> Extension:Replacement -> Base:Replacement
+    //       -> Grand -> Extension -> Base
     var proxy = Extension.call(this, proxyOptions);
 
     var Replacement = function () {};
@@ -42,6 +43,11 @@ function Grand (options) {
     }
     var replacedThis = new Replacement();
     // Transfer proxy own (public) properties to repl.
+    // replacedThis' prototype chain is
+    // replacedThis -> Grand:replacement
+    //              -> Extension:Replacement
+    //              -> Base:Replacement
+    //              -> Grand -> Extension -> Base
     return replacedThis;
 }
 Grand.prototype = Object.create(Extension.prototype);

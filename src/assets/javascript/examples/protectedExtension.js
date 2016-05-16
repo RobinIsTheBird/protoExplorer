@@ -35,6 +35,8 @@ function Extension (options) {
     proxyOptions.protectd.x = protectedState.initialX;
     var replacedThis = new Replacement();
     // Transfer proxy own (public) properties to repl.
+    // replacedThis -> Extension:Replacement -> Base:Replacement
+    //              -> Extension -> Base
     return replacedThis;
 }
 Extension.prototype = Object.create(Base.prototype);
